@@ -1,4 +1,4 @@
-import Data.Arrays
+import Data.Array
 
 
 -- se não foi preenchida então o bloco da matriz é representado por -1
@@ -18,3 +18,29 @@ boolMatrix = array ((0,0),(5,5)) [((0,0),True), ((0,1),False), ((0,2),False), ((
                                   ((3,0),False), ((3,1),False), ((3,2),False), ((3,3),False), ((3,4),False), ((3,5),True),
                                   ((4,0),False), ((4,1),False), ((4,2),False), ((4,3),False), ((4,4),False), ((4,5),True),
                                   ((5,0),True), ((5,1),True), ((5,2),True), ((5,3),False), ((5,4),False), ((5,5),True)]
+
+getRow :: Array (Int,Int) Int -> Int -> Int -> [Int]
+getRow mat a 6 = [] --gambiarra pois n sei fazer condição de parada em haskell
+getRow mat a b = if mat!(a,b) /= -1 then [mat!(a,b)] ++ getRow mat a (b+1)
+                 else getRow mat a (b+1)
+
+getColumn :: Array (Int,Int) Int -> Int -> Int -> [Int]
+getColumn mat 6 b = []
+getColumn mat a b = if mat!(a,b) /= -1 then [mat!(a,b)] ++ getColumn mat (a+1) b
+                    else getColumn mat (a+1) b
+
+-- solve :: Array (Int,Int) Int -> Array (Int,Int) Int -> Array (Int,Int) Int
+-- solve matNum matBool =
+
+--retorna uma lista de numeros que podem ser utilizados para um determinado quadrado
+possibleNum :: Array (Int,Int) Int -> Int -> Int -> [Int]
+possibleNum mat a b = [ n | n <- [1..6], not $ any (n==) (getRow mat a 0), not $ any (n==) (getColumn mat 0 b)]
+
+-- verifica se um quadrado nunca foi alterado e não está em um quadrado preto
+isBlank :: Array (Int,Int) Int -> Array (Int,Int) Bool -> Int -> Int -> Bool
+isBlank matNum matBool a b = matNum!(a,b) == -1 && matBool!(a,b) /= True
+
+main = do
+    print (getRow matrix 0 1)
+    print (getColumn matrix 0 1)
+    print $ possibleNum matrix 0 1
