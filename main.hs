@@ -1,5 +1,5 @@
 import Data.Array
-
+import Data.List
 
 -- se não foi preenchida então o bloco da matriz é representado por -1
 -- na hora de printar a matriz resolvida da pra trocar de Int pra String e quando for -1 so deixa um " "
@@ -40,7 +40,15 @@ possibleNum mat a b = [ n | n <- [1..6], not $ any (n==) (getRow mat a 0), not $
 isBlank :: Array (Int,Int) Int -> Array (Int,Int) Bool -> Int -> Int -> Bool
 isBlank matNum matBool a b = matNum!(a,b) == -1 && matBool!(a,b) /= True
 
+isSequence :: [Int] -> Bool
+isSequence list = (((sort list) !! (length list)) - ((sort list) !! 0)) == length list
+
+
+
 main = do
     print (getRow matrix 0 1)
     print (getColumn matrix 0 1)
     print $ possibleNum matrix 0 1
+    print $ isSequence [4,3]
+    print $ isSequence [2,5,4]
+    print $ isSequence [1,3,2]
