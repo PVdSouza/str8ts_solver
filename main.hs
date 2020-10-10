@@ -31,9 +31,6 @@ getColumn mat 6 b = []
 getColumn mat a b = if mat!(a,b) /= -1 then [mat!(a,b)] ++ getColumn mat (a+1) b
                     else getColumn mat (a+1) b
 
--- solve :: Array (Int,Int) Int -> Array (Int,Int) Int -> Array (Int,Int) Int
--- solve matNum matBool =
-
 --retorna uma lista de numeros que podem ser utilizados para um determinado quadrado
 possibleNum :: Array (Int,Int) Int -> Int -> Int -> [Int]
 possibleNum mat a b = [ n | n <- [1..6], not $ any (n==) (getRow mat a 0), not $ any (n==) (getColumn mat 0 b)]
@@ -54,37 +51,47 @@ getAreasRow mat a b  | mat!(a,b) = getAreasRow mat a (b+1)
 getAreasColumn :: Array (Int, Int) Bool -> Int -> Int -> [(Int, Int)]
 getAreasColumn mat 6 a = []
 getAreasColumn mat a b  | mat!(a,b) = getAreasRow mat (a+1) b
-                        | otherwise = (a,b) : getAreasRow mat (a+1) b                     
+                        | otherwise = (a,b) : getAreasRow mat (a+1) b
 
 getSequenceRow :: [(Int, Int)] ->[[(Int, Int)]]
 getSequenceRow ((a,b):(c,d):xs) | (a == c-1) = [(a,b)] : getSequenceRow ((c,d):xs)
                                 | otherwise  = getSequenceRow ((c,d):xs)
 getSequenceRow ((a,b):()) = []
 
+isFinished :: Array (Int,Int) Int -> Array (Int,Int) Bool -> Int -> Int -> Bool
+isFinished matNum matBool 6 0 = True
+isFinished matNum matBool a 6 = isFinished matNum matBool (a+1) 0
+isFinished matNum matBool a b = if matBool!(a,b) == False && matNum!(a,b) /= -1 then (isFinished matNum matBool a (b+1))
+                                else if matBool!(a,b) == True then (isFinished matNum matBool a (b+1))
+                                else False
+
+-- createMatrix :: Array (Int,Int) Int -> Array (Int,Int) Bool -> Array (Int,Int) Int
+-- createMatrix matNum matBool = array (bounds matNum) [getMatValues matNum matBool]
+createMatrix :: Array (Int,Int) Int -> Array (Int,Int) Bool -> Array (Int,Int) Int
+createMatrix matNum matBool = array (bounds matNum) [((i,j),n) | (i,j) <- range $ bounds matNum, n <- if matBool!(i,j) == True && matNum!(i,j) == -1 then [0] else [(matNum!(i,j))]]
 
 main = do
 
     --pega os brancos de cada linha
-    print (getSequenceRow(getAreasRow boolMatrix 0 0))
-    print (getSequenceRow(getAreasRow boolMatrix 1 0))
-    print (getSequenceRow(getAreasRow boolMatrix 2 0))
-    print (getSequenceRow(getAreasRow boolMatrix 3 0))
-    print (getSequenceRow(getAreasRow boolMatrix 4 0))
-    print (getSequenceRow(getAreasRow boolMatrix 5 0))
-    print("")
+    -- print (getSequenceRow(getAreasRow boolMatrix 0 0))
+    -- print (getSequenceRow(getAreasRow boolMatrix 1 0))
+    -- print (getSequenceRow(getAreasRow boolMatrix 2 0))
+    -- print (getSequenceRow(getAreasRow boolMatrix 3 0))
+    -- print (getSequenceRow(getAreasRow boolMatrix 4 0))
+    -- print (getSequenceRow(getAreasRow boolMatrix 5 0))
+    -- print("")
      --pega os brancos de cada coluna
-    print (getAreasColumn boolMatrix 0 0)
-    print (getAreasColumn boolMatrix 0 1)
-    print (getAreasColumn boolMatrix 0 2)
-    print (getAreasColumn boolMatrix 0 3)
-    print (getAreasColumn boolMatrix 0 4)
-    print (getAreasColumn boolMatrix 0 5)
-    print("")
-    
-    print("")
+    -- print (getAreasColumn boolMatrix 0 0)
+    -- print (getAreasColumn boolMatrix 0 1)
+    -- print (getAreasColumn boolMatrix 0 2)
+    -- print (getAreasColumn boolMatrix 0 3)
+    -- print (getAreasColumn boolMatrix 0 4)
+    -- print (getAreasColumn boolMatrix 0 5)
 
-    print (getColumn matrix 0 1)
-    print $ possibleNum matrix 0 1
-    print $ isSequence [4,3]
-    print $ isSequence [2,5,4]
-    print $ isSequence [1,3,2]
+    -- print (getColumn matrix 0 1)
+    -- print $ possibleNum matrix 0 1
+    -- print $ isSequence [4,3]
+    -- print $ isSequence [2,5,4]
+    -- print $ isSequence [1,3,2]
+    print $ createMatrix matrix boolMatrix
+    -- print $ (isFinished matrix boolMatrix 0 0)
