@@ -19,6 +19,14 @@ colorBoard = [False, True,  True,  False, False, False,
               True,  True,  True,  True,  True,  False,
               False, False, False, True,  True,  False]
 
+resultBoard :: [Int]
+resultBoard = [0, 0, 3, 2, 1, 4,
+               5, 4, 2, 1, 3, 0,
+               2, 3, 0, 0, 6, 5,
+               3, 2, 0, 0, 5, 6,
+               0, 5, 4, 3, 2, 1,
+               0, 6, 5, 4, 0, 0]
+
 -- transformador de indice para coordenaqda
 itop :: Int -> (Int, Int)
 itop index = (coordX index, coordY index)
@@ -51,21 +59,29 @@ actRemove _ [] = []
 actRemove a (x:xs) | x == a    = actRemove a xs
                    | otherwise = x : actRemove a xs
 
+-- pega todas as sequencias existentes no tabuleiro
 getSequences :: [Int] -> [Bool] -> Int -> [[Int]]
 getSequences board color 6 = []
 getSequences board color index = (getSeqColumn board color index) ++ (getSeqLine board color index) ++ getSequences board color (index + 1)
 
+--  divide as sequencias recebidas por uma lista quando o booleano de sua tupla for False
 splitOn :: [(Int,Bool)] -> [[Int]]
 splitOn [] = []
-splitOn l  = [[i | (i,j) <- takeWhile (snd) l]] ++ splitOn (dropWhile (not . snd) (dropWhile (snd) l))
+splitOn l  = filter (\l -> length l /= 0) [[i | (i,j) <- takeWhile (snd) l]] ++ splitOn (dropWhile (not . snd) (dropWhile (snd) l))
 
+-- pega as sequencias presentes em uma coluna
 getSeqColumn :: [Int] -> [Bool] -> Int -> [[Int]]
 getSeqColumn board color column = splitOn [(num,bol) | (num,bol) <- zip (getColumn column board) (getColumn column color)]
 
+-- pega as sequencias presentes em uma linha
 getSeqLine :: [Int] -> [Bool] -> Int -> [[Int]]
 getSeqLine board color line = splitOn [(num,bol) | (num,bol) <- zip (getRow lineIndex board) (getRow lineIndex color)]
     where lineIndex = line * 6
 
+isFinished :: [Int] -> [Bool] -> Bool
+isFinished board color = all (True==) (map isSequence (getSequences board color 0))
+
+-- verifica se as sequencias presentes na lista recebida são validas
 isSequence :: [Int] -> Bool
 isSequence list = (((sort list) !! (length list - 1)) - ((sort list) !! 0)) == length list - 1
 
@@ -88,21 +104,22 @@ try index board value = take index board ++ [value] ++ drop (index + 1) board
 
 -- testador de possiveis soluções recursivas
 solve :: Int -> [Int] -> [Int] -> [Bool] -> [Int]
-solve 35 board [] colors    = []
+solve 35 board [] colors     = []
 solve 35 board (x:[]) colors = []
 solve 35 board (x:_) colors  = []
-solve _ board [] colors                        = []
+solve _ board [] colors      = []
 solve index board (value:values) colors | (tryNext == []) = (solve index board values colors)
                                         | otherwise     = (tryNext)
     where solveNext index board colors  = solve (nextBlank index board) board (getOptions (nextBlank index board) board) colors
           tryNext                       = solveNext index (try index board value) colors
 
 main = do
-    print $ getOptions (ptoi (1,5)) numberBoard
+    -- print $ getOptions (ptoi (1,5)) numberBoard
     -- print $ getSequences numberBoard colorBoard 0
     -- print $ isSequence [5,2,4]
     -- print $ getSeqColumn numberBoard colorBoard 0
     -- print $ getSeqLine numberBoard colorBoard 1
     -- print $ getRow 3 numberBoard
     print $ getSequences numberBoard colorBoard 0
+    print $ isFinished resultBoard colorBoard
     -- print $ splitOn [(1, True),(2, True),(-1,False),(3, True),(4, True),(5, True)]
