@@ -3,32 +3,21 @@ import Data.Function
 import Debug.Trace
 -- mapa do tabuleiro
 numberBoard :: [Int]
-numberBoard = [0, 0, 0, 1, 0, 0,
-               0, 0, 0, 0, 5, 0,
-               0, 0, 1, 0, 0, 0,
-               4, 0, 0, 0, 0, 0,
-               0, 6, 5, 0, 0, 0,
-               0, 0, 0, 0, 1, 4]
+numberBoard = [3, 0, 0, 4, 0, 0,
+               0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 2,
+               4, 0, 0, 0, 0, 3,
+               0, 0, 0, 0, 0, 5,
+               0, 0, 3, 0, 1, 0]
 
 -- cores do tabuleiro
 colorBoard :: [Bool]
-colorBoard = [False, True,  True,  False, False, False,
-              False, True,  True,  True,  True,  True,
-              False, True,  True,  True,  True,  True,
-              True,  True,  True,  True,  True,  False,
-              True,  True,  True,  True,  True,  False,
-              False, False, False, True,  True,  False]
-
-resultBoard :: [Int]
-resultBoard = [0, 4, 3, 1, 0, 0,
-               0, 2, 4, 3, 5, 1,
-               0, 3, 1, 5, 4, 2,
-               4, 5, 2, 6, 3, 0,
-               3, 6, 5, 4, 2, 0,
-               0, 0, 0, 2, 1, 4]
-
-testBoard :: [Int]
-testBoard = [0,2,3,1,0,0,0,1,2,3,5,6,0,3,1,5,4,2,4,5,6,2,3,0,3,6,5,4,2,0,0,0,0,6,1,4]
+colorBoard = [False, False,  True,  True, True, False,
+              False, True,  True,  True,  True,  False,
+              True, True,  False,  False,  True,  True,
+              True,  True,  False,  False,  True,  True,
+              False,  True,  True,  True,  True,  False,
+              False, True, True, True,  False,  False]
 
 -- transformador de indice para coordenaqda
 itop :: Int -> (Int, Int)
@@ -102,6 +91,9 @@ nextBlank index board | index == ((length board) - 1)                           
                       | (board !! (index + 1) == 0) && (((colorBoard) !! (index+1)) == True) = index + 1
                       | otherwise                                                = nextBlank (index + 1) board
 
+isValid :: Int -> [Bool] -> Int
+isValid index board | (board !! index) == False = isValid (index + 1) board
+                    | otherwise = index
 
 -- cria um novo tabuleiro substituindo o valor "value" no indice "index"
 try :: Int -> [Int] -> Int -> [Int]
@@ -119,8 +111,18 @@ solve index board (value:values) colors | (tryNext == []) = (solve index board v
     where solveNext index board colors  = solve (nextBlank index board) board (getOptions (nextBlank index board) board) colors
           tryNext                       = solveNext index (try index board value) colors
 
-main = do
-    print $ solve 1 numberBoard (getOptions 1 numberBoard) colorBoard
+joinWith :: a -> [a] -> [a]
+joinWith _ (x:[])  = [x]
+joinWith c (x:xs)  = x : c : joinWith c xs
+
+pPrint [] = []
+pPrint s  = spaceOut s ++ pPrint (drop 6 s)
+  where showS s    = concatMap show s
+        space      = ' '
+        newline    = "\n"
+        spaceOut s = joinWith space (take 6 (showS s) ++ newline) 
+
+    -- putStrLn $ pPrint $ solve 1 numberBoard (getOptions 1 numberBoard) colorBoard
     -- print $ getSequences numberBoard colorBoard 0
     -- print $ getSeqColumn numberBoard colorBoard 0
     -- print $ getSeqLine numberBoard colorBoard 1
