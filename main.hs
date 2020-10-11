@@ -1,3 +1,5 @@
+import Data.List
+import Data.Function
 -- mapa do tabuleiro
 numberBoard :: [Int]
 numberBoard = [0, 0, 0, 1, 0, 0,
@@ -32,7 +34,7 @@ getColumn index board = auxGet (itop index) board
     where auxGet (x, _) board = map (\y -> board !! ptoi (x, y)) [0..5]
 
 -- pega as linhas de numberBoard ou colorBoard
-getRow :: Int -> [Int] -> [Int]
+getRow :: Int -> [t] -> [t]
 getRow index board = auxGet (itop index) board
     where auxGet (_, y) board = map (\x -> board !! ptoi (x, y)) [0..5]
 
@@ -47,6 +49,24 @@ actRemove :: Int -> [Int] -> [Int]
 actRemove _ [] = []
 actRemove a (x:xs) | x == a    = actRemove a xs
                    | otherwise = x : actRemove a xs
+
+getSequences :: [Int] -> [Bool] -> Int -> [[Int]]
+getSequences board color 6 = []
+getSequences board color index = (getSeqColumn board color index) ++ (getSeqLine board color index) ++ getSequences board color (index + 1)
+
+splitOn :: [(Int,Bool)] -> [[Int]]
+splitOn [] = []
+splitOn l  = [[i | (i,j) <- takeWhile (snd) l]] ++ splitOn (dropWhile (not . snd) (dropWhile (snd) l))
+
+getSeqColumn :: [Int] -> [Bool] -> Int -> [[Int]]
+getSeqColumn board color column = splitOn [(num,bol) | (num,bol) <- zip (getColumn column board) (getColumn column color)]
+
+getSeqLine :: [Int] -> [Bool] -> Int -> [[Int]]
+getSeqLine board color line = splitOn [(num,bol) | (num,bol) <- zip (getRow lineIndex board) (getRow lineIndex color)]
+    where lineIndex = line * 6
+
+isSequence :: [Int] -> Bool
+isSequence list = (((sort list) !! (length list - 1)) - ((sort list) !! 0)) == length list - 1
 
 -- valores validos no indice index
 getOptions :: Int -> [Int] -> [Int]
@@ -73,3 +93,10 @@ solve index board (value:values) | tryNext == [] = solve index board values
 
 main = do
     print $ getOptions (ptoi (1,5)) numberBoard
+    -- print $ getSequences numberBoard colorBoard 0
+    -- print $ isSequence [5,2,4]
+    -- print $ getSeqColumn numberBoard colorBoard 0
+    -- print $ getSeqLine numberBoard colorBoard 1
+    -- print $ getRow 3 numberBoard
+    print $ getSequences numberBoard colorBoard 0
+    -- print $ splitOn [(1, True),(2, True),(-1,False),(3, True),(4, True),(5, True)]
