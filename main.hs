@@ -66,7 +66,13 @@ try index board value = take index board ++ [value] ++ drop (index + 1) board
 
 -- testador de possiveis soluções recursivas
 solve :: Int -> [Int] -> [Int] -> [Bool] -> [Int]
+solve 35 board [] colors    = []
+solve 35 board (x:[]) colors = []
+solve 35 board (x:_) colors  = []
+solve _ board [] colors                        = []
 solve index board (value:values) colors | (tryNext == []) = (solve index board values colors)
                                         | otherwise     = (tryNext)
     where solveNext index board colors  = solve (nextBlank index board colors) board (getOptions (nextBlank index board colors) board) colors
           tryNext                       = solveNext index (try index board value) colors
+
+main = print(solve 0 numberBoard [1..6] colorBoard)
