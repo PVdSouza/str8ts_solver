@@ -55,10 +55,10 @@ getOptions index board | index > length board  = []
                        | otherwise             = [board !! index]
 
 -- busca a proxima celular nao preenchida do tabuleiro
-nextBlank :: Int -> [Int] -> [Bool] -> Int
-nextBlank index board colors | index == ((length board) - 1)                        = ((length board) - 1)
-                             | (board !! (index + 1) == 0) && (colors !! (index+1)) = index + 1
-                             | otherwise                                            = nextBlank (index + 1) board colors
+nextBlank :: Int -> [Int] -> Int
+nextBlank index board | index == ((length board) - 1)                            = ((length board) - 1)
+                      | (board !! (index + 1) == 0) && (((colorBoard) !! (index+1)) == True) = index + 1
+                      | otherwise                                                = nextBlank (index + 1) board
 
 -- cria um novo tabuleiro substituindo o valor "value" no indice "index"
 try :: Int -> [Int] -> Int -> [Int]
@@ -72,7 +72,7 @@ solve 35 board (x:_) colors  = []
 solve _ board [] colors                        = []
 solve index board (value:values) colors | (tryNext == []) = (solve index board values colors)
                                         | otherwise     = (tryNext)
-    where solveNext index board colors  = solve (nextBlank index board colors) board (getOptions (nextBlank index board colors) board) colors
+    where solveNext index board colors  = solve (nextBlank index board) board (getOptions (nextBlank index board) board) colors
           tryNext                       = solveNext index (try index board value) colors
 
-main = print(solve 0 numberBoard [1..6] colorBoard)
+main = print(getColumn 1 (solve 0 numberBoard [1..6 ] colorBoard))
