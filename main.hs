@@ -87,7 +87,8 @@ getOptions index board | index > length board  = []
 
 -- busca a proxima celular nao preenchida do tabuleiro
 nextBlank :: Int -> [Int] -> Int
-nextBlank index board | index == ((length board) - 1)                            = ((length board) - 1)
+nextBlank index board | index == ((length board) - 1) && (colorBoard !! index) == True       = ((length board) - 1)
+                      | index == ((length board) - 1) && (colorBoard !! index) == False      = length board
                       | (board !! (index + 1) == 0) && (((colorBoard) !! (index+1)) == True) = index + 1
                       | otherwise                                                = nextBlank (index + 1) board
 
@@ -101,6 +102,8 @@ try index board value = take index board ++ [value] ++ drop (index + 1) board
 
 -- testador de possiveis soluções recursivas
 solve :: Int -> [Int] -> [Int] -> [Bool] -> [Int]
+solve 36 board _ colors | isFinished board colorBoard= board
+                        | otherwise = []
 solve 35 board [] colors     = []
 solve 35 board (x:[]) colors | isFinished (try 35 board x) colorBoard = try 35 board x
                              | otherwise = []
@@ -122,13 +125,9 @@ pPrint s  = spaceOut s ++ pPrint (drop 6 s)
         newline    = "\n"
         spaceOut s = joinWith space (take 6 (showS s) ++ newline) 
 
-    -- putStrLn $ pPrint $ solve 1 numberBoard (getOptions 1 numberBoard) colorBoard
-    -- print $ getSequences numberBoard colorBoard 0
-    -- print $ getSeqColumn numberBoard colorBoard 0
-    -- print $ getSeqLine numberBoard colorBoard 1
-    -- trace("board= "++ show board)
-    -- print $ getRow 3 numberBoard
-    -- print $ getSequences numberBoard colorBoard 0
+fullSolve = putStrLn $ pPrint $ solve (isValid 0 colorBoard) numberBoard (getOptions (isValid 0 colorBoard) numberBoard) colorBoard
 
-    -- print $ isFinished resultBoard colorBoard
-    -- print $ splitOn [(1, True),(2, True),(-1,False),(3, True),(4, True),(5, True)]
+
+
+-- para executar, rodar ghci e o seguinte comando
+-- putStrln $ pPrint $ solve (isValid 0 colorBoard) numberBoard (getOptions (isValid 0 colorBoard) numberBoard) colorBoard
