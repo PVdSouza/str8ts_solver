@@ -153,12 +153,11 @@ try index board value = take index board ++ [value] ++ drop (index + 1) board
 -- solveNext e tryNext, que buscam a próxima célula válida do
 -- tabuleiro e realizam testes com os possíveis valores
 solve :: Int -> [Int] -> [Int] -> [Bool] -> [Int]
-solve 36 board _ colors | isFinished board colorBoard= board
+solve 36 board _ colors | isFinished board colors = board
                         | otherwise = []
 solve 35 board [] colors     = []
-solve 35 board (x:[]) colors | isFinished (try 35 board x) colorBoard = try 35 board x
-                             | otherwise = []
-solve 35 board (x:_) colors  = []
+solve 35 board (x:b) colors | isFinished (try 35 board x) colors = try 35 board x
+                            | otherwise = solve 35 board b colors
 solve _ board [] colors      = []
 solve index board (value:values) colors | (tryNext == []) = (solve index board values colors)
                                         | otherwise       = (tryNext)
