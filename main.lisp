@@ -16,8 +16,15 @@
 
 (defun itop (index)
     (cons
-        (multiple-value-bind (q r) (floor index 6) r)
-        (* (- index 6) (multiple-value-bind (q r) (floor index 6) r))
+        (new-div index 6)
+        (- index (* (new-div index 6) 6))
+    )
+)
+
+(defun new-div (x y)
+    (if (>=(- x y) 0)
+        (+ 1 (new-div (- x y) y))
+        0
     )
 )
 
