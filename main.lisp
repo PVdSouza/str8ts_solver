@@ -42,11 +42,11 @@
 )
 
 (defun getRow(index board)
-    (mapcar (lambda (x) (nth (ptoi x index) board)) '(0 1 2 3 4 5))
+    (mapcar (lambda (x) (nth (ptoi index x) board)) '(0 1 2 3 4 5))
 )
 
 (defun getColumn(index board)
-    (mapcar (lambda (y) (nth (ptoi index y) board)) '(0 1 2 3 4 5))
+    (mapcar (lambda (y) (nth (ptoi y index) board)) '(0 1 2 3 4 5))
 )
 
 (defun getSequences (board color index)
@@ -111,7 +111,6 @@
     (loop for item in lista
           while (nth 1 item)
           collect (nth 0 item))
-    ;; (collect-list (list i) (for i in lista) (take-while ()))
 )
 
 (defun take-while (pred list)
@@ -120,10 +119,25 @@
         collect x)
 )
 
-(defun getSeqColumn ()
+(defun getSeqColumn (board color column)
+    (splitOn (zip (getColumn column board) (getColumn column color)))
 )
 
-(defun getSeqLine()
+(defun zip (board color)
+    (if (null board)
+        ()
+        (if (null color)
+            ()
+            (cons
+                (list (car board) (car color))
+                (zip (cdr board) (cdr color))
+            )
+        )
+    )
+)
+
+(defun getSeqLine(board color line)
+    (splitOn (zip (getRow line board) (getRow line color)))
 )
 
 (defun isFinished (color board)
