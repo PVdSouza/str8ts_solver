@@ -86,6 +86,27 @@
     )
 )
 
+(defun nextBlank (index board color)
+    (if (= index (length board))
+        (if (nth index color)
+            (- (length board) 1)
+            (length board)
+        )
+        
+        (if (= (nth (+ index 1) board) 0)
+            (if (nth (+ index 1) color)
+                (+ index 1)
+                (nextBlank (+ index 1) board color)
+            )
+        )
+    )
+)
+
+(defun try (index board value)
+    (setf (nth index board) value)
+    (return-from try board)
+)
+
 (defun take-while-second(lista)
     (loop for item in lista
           while (nth 1 item)
@@ -105,8 +126,21 @@
 (defun getSeqLine()
 )
 
-(defun isFinished()
+(defun isFinished (color board)
+    (set 'sequences (getSeqColumn board color 0))
+    (actFinished sequences)
 )
 
-(defun isSequence()
+
+(defun actFinished(list)
+    (if (null list)
+        'TRUE)
+    (if (not (isSequence (first list)))
+        (nil)
+    (isFinished (rest list))
+    )
+)
+
+(defun isSequence(list)
+    (= (- (nth (- (lentght list) 1) (sort 'list)) (nth  0 (sort 'list)))) ( - (length list) 1)
 )
