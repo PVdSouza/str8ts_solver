@@ -92,7 +92,7 @@
             (- (length board) 1)
             (length board)
         )
-        
+
         (if (= (nth (+ index 1) board) 0)
             (if (nth (+ index 1) color)
                 (+ index 1)
@@ -157,4 +157,42 @@
 
 (defun isSequence(list)
     (= (- (nth (- (lentght list) 1) (sort 'list)) (nth  0 (sort 'list)))) ( - (length list) 1)
+)
+
+(defun solve (index board values colors)
+    (if (= index 36)
+        (if (isFinished board colors)
+            board
+            ()
+        )
+    )
+
+    (if (= index 35)
+        (if (= values ())
+            ()
+            (if (isFinished (try 35 board (car board)) colors)
+                (try 35 board (car board))
+                (solve 35 board (cdr board) colors)
+            )
+        )
+    )
+
+    (if (= values ())
+        ()
+    )
+
+    (if (= (tryNext (car values) colors) ())
+        (solve index board (cdr values) colors)
+        (tryNext)
+    )
+
+)
+
+(defun tryNext (index board value colors)
+    (solveNext index (try index board value) colors)
+)
+
+
+(defun solveNext (index board colors)
+    (solve (nextBlank index board) board (getOptions (nextBlank index board) board) colors)
 )
