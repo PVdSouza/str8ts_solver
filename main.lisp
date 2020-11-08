@@ -39,8 +39,8 @@
 
 
 (defun isValid(index board)
-    (if (= (nth index board) Nil)
-        isValid (+ index 1)
+    (if (not (nth index board))
+        (isValid (+ index 1) board)
         index
     )
 )
@@ -168,7 +168,7 @@
 )
 
 (defun isSequence(list)
-    (if (null list) 
+    (if (null list)
         T
         (= (- (nth (- (length list) 1) (sort list '<)) (nth  0 (sort list '<))) ( - (length list) 1))
     )
@@ -176,7 +176,7 @@
 
 (defun solve (index board values colors)
     (if (= index 36)
-        (if (isFinished board colors)
+        (if (isFinished colors board)
             board
             ()
         )
@@ -185,7 +185,7 @@
     (if (= index 35)
         (if (null values)
             ()
-            (if (isFinished (try 35 board (car board)) colors)
+            (if (isFinished colors (try 35 board (car board)))
                 (try 35 board (car board))
                 (solve 35 board (cdr board) colors)
             )
@@ -198,7 +198,7 @@
 
     (if (null (tryNext index board (car values) colors))
         (solve index board (cdr values) colors)
-        (tryNext)
+        (tryNext index board (car values) colors)
     )
 
 )
