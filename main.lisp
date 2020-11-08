@@ -183,7 +183,7 @@
     )
 
     (if (= index 35)
-        (if (= values ())
+        (if (null values)
             ()
             (if (isFinished (try 35 board (car board)) colors)
                 (try 35 board (car board))
@@ -192,11 +192,11 @@
         )
     )
 
-    (if (= values ())
+    (if (null values)
         ()
     )
 
-    (if (= (tryNext (car values) colors) ())
+    (if (null (tryNext index board (car values) colors))
         (solve index board (cdr values) colors)
         (tryNext)
     )
@@ -209,7 +209,7 @@
 
 
 (defun solveNext (index board colors)
-    (solve (nextBlank index board) board (getOptions (nextBlank index board) board) colors)
+    (solve (nextBlank index board colors) board (getOptions (nextBlank index board colors) board) colors)
 )
 
 (defun getOptions (index board)
