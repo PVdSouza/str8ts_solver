@@ -22,10 +22,7 @@
 
 
 (defun itop (index)
-    (cons
-        (new-div index 6)
-        (- index (* (new-div index 6) 6))
-    )
+    (cons (new-div index 6) (list (- index (* (new-div index 6) 6))))
 )
 
 (defun new-div (x y)
@@ -213,4 +210,28 @@
 
 (defun solveNext (index board colors)
     (solve (nextBlank index board) board (getOptions (nextBlank index board) board) colors)
+)
+
+(defun getOptions (index board)
+    (if (> index (length board))
+        ()
+        (if (= (nth index board) 0)
+            (removes '(1 2 3 4 5 6) index board)
+            (nth index board)
+        )
+    )
+)
+
+(defun removes(lista index board)
+    (remove-if-equal (remove-if-equal lista (getColumn (nth 1 (itop index)) board)) (getRow (nth 0 (itop index)) board))
+)
+
+(defun remove-if-equal (lista board)
+    (if (null lista)
+        ()
+        (if (find (car lista) board)
+            (remove-if-equal (cdr lista) board)
+            (cons (car lista) (remove-if-equal (cdr lista) board))
+        )
+    )
 )
