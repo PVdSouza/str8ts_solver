@@ -5,13 +5,20 @@
                     0 0 0 0 0 5
                     0 0 3 0 1 0))
 
+(set 'numberDone  '(3 0 5 4 6 0
+                    0 2 4 3 5 0
+                    5 6 0 0 3 2
+                    4 5 0 0 2 3
+                    0 3 2 1 4 5
+                    0 4 3 2 1 0))
 
-(set 'colorBoard '(NIL NIL T  T  T  NIL
-                   NIL T   T  T  T  NIL
-                   T   T  NIL NIL T  T
-                   T   T  NIL NIL T  T
-                   NIL T  T  T  T   NIL
-                   NIL T  T  T  NIL NIL))
+
+(set 'colorBoard '(NIL NIL T   T   T   NIL
+                   NIL T   T   T   T   NIL
+                   T   T   NIL NIL T   T
+                   T   T   NIL NIL T   T
+                   NIL T   T   T   T   NIL
+                   NIL T   T   T   NIL NIL))
 
 
 (defun itop (index)
@@ -51,7 +58,15 @@
 
 (defun getSequences (board color index)
     (if (= index 6)
-        (cons (cons (getSeqColumn board color index) (getSeqLine board color index)) (getSequences board color (+ index 1)))
+        ()
+        (new-concat (new-concat (getSeqColumn board color index) (getSeqLine board color index)) (getSequences board color (+ index 1)))
+    )
+)
+
+(defun new-concat (l1 l2)
+    (if (null l1)
+        l2
+        (cons (car l1) (new-concat (cdr l1) l2))
     )
 )
 
@@ -141,22 +156,25 @@
 )
 
 (defun isFinished (color board)
-    (set 'sequences (getSeqColumn board color 0))
+    (set 'sequences (getSequences board color 0))
     (actFinished sequences)
 )
 
-
 (defun actFinished(list)
     (if (null list)
-        'TRUE)
-    (if (not (isSequence (first list)))
-        (nil)
-    (isFinished (rest list))
+        T
+        (if (isSequence (car list))
+            (actFinished (cdr list))
+            NIL
+        )
     )
 )
 
 (defun isSequence(list)
-    (= (- (nth (- (lentght list) 1) (sort 'list)) (nth  0 (sort 'list)))) ( - (length list) 1)
+    (if (null list) 
+        T
+        (= (- (nth (- (length list) 1) (sort list '<)) (nth  0 (sort list '<))) ( - (length list) 1))
+    )
 )
 
 (defun solve (index board values colors)
