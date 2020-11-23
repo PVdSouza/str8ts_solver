@@ -18,9 +18,40 @@ my_last([X],X).
 my_last([H|T],L) :- my_last(T,L).
 
 
-%não ta funcionando \/
-get_sequence([],[],[]).
-get_sequence([H|List],[C|Color],L) :- get_sequence(List,Color,XL), C, L is [H|XL].
+%não ta funcionando
+get_sequences([],[],[]).
+get_sequences(Number,Color,[L | Tail]) :-
+    get_one_sequence(Number,Color,L),
+    remove_used_true(Number,Color,XNumber),
+    remove_used_true_colors(Number,Color,XColor),
+    get_sequences(XNumber,XColor,Tail).
+
+remove_used_true([],[],[]).
+remove_used_true([N|Number],[C|Color],Result) :-
+    (C = true -> remove_used_true(Number,Color,Result);remove_used_false([N|Number],[C|Color],Result)).
+
+remove_used_false([],[],[]).
+remove_used_false(Number,true,Number).
+remove_used_false(Number,[true,Color],Number).
+remove_used_false([N|Number],[C|Color],Result) :-
+    (C = false -> remove_used_false(Number,Color,Result);Result is [N|Number]).
+
+remove_used_true_colors([],[],[]).
+remove_used_true_colors([N|Number],[C|Color],Result) :-
+    (C = true -> remove_used_true_colors(Number,Color,Result);remove_used_false_colors([N|Number],[C|Color],Result)).
+
+remove_used_false_colors([],[],[]).
+remove_used_false_colors(_,true,true).
+remove_used_false_colors(_,[true,Color],[true,Color]).
+remove_used_false_colors([N|Number],[C|Color],Result) :-
+    (C = false -> remove_used_false_colors(Number,Color,Result);Result is [C|Color]).
+
+get_one_sequence([],[],[]).
+get_one_sequence(_,false,[]).
+get_one_sequence(number,true,number).
+get_one_sequence(_,[false|Color],[]).
+get_one_sequence([H|Number],[C|Color],L) :-
+    (C = true -> get_one_sequence(Number,Color,XL), append([H],XL,L)).
 
 % Puzzle = [
 %   [_,_,_,_,_,3],
