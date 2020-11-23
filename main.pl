@@ -1,14 +1,29 @@
 :- use_module(library(clpfd)).
 
-str8ts(Rows,Colors) :-
-  append(Rows, Vs), Vs ins 1..6,
-  before_sequences(Rows,Colors,Sequences),
-  maplist(is_sequence, Sequences),
-  transpose(Rows, Columns),
-  transpose(Colors, TColors)
-  before_sequences(Columns,TColors,TSequences),
-  maplist(is_sequence, TSequences),
-  maplist(label, Rows).
+tabuleiro([[_,_,_,_,_,3],
+           [_,_,_,1,_,_],
+           [_,6,_,_,_,_],
+           [_,_,3,_,1,_],
+           [3,2,_,6,_,_],
+           [5,_,_,_,_,_]]).
+
+cores([[false,true,true,false,false,false],
+       [false,true,true,false,true,true],
+       [false,true,true,true,true,true],
+       [true,true,true,true,true,false],
+       [true,true,false,true,true,false],
+       [false,false,false,true,true,false]]).
+
+str8ts(Rows) :-
+    cores(Color),
+    append(Rows, Vs), Vs ins 1..6,
+    before_sequences(Rows,Colors,Sequences),
+    maplist(is_sequence, Sequences),
+    transpose(Rows, Columns),
+    transpose(Colors, TColors),
+    before_sequences(Columns,TColors,TSequences),
+    maplist(is_sequence, TSequences),
+    maplist(label, Rows).
 
 is_sequence([]).
 is_sequence([L]).
@@ -64,14 +79,7 @@ get_one_sequence(_,[false|Color],[]).
 get_one_sequence([H|Number],[C|Color],L) :-
     (C = true -> get_one_sequence(Number,Color,XL), append([H],XL,L)).
 
-% Puzzle = [
-%   [_,_,_,_,_,3],
-%   [_,_,_,1,_,_],
-%   [_,6,_,_,_,_],
-%   [_,_,3,_,1,_],
-%   [3,2,_,6,_,_],
-%   [5,_,_,_,_,_]
-%   ],
+
 %   [
 %   [false,true,true,false,false,false],
 %   [false,true,true,false,true,true],
@@ -79,32 +87,3 @@ get_one_sequence([H|Number],[C|Color],L) :-
 %   [true,true,true,true,true,false],
 %   [true,true,false,true,true,false],
 %   [false,false,false,true,true,false],
-%   ],
-%   [_,5,4,_,_,3],
-%   [_,3,2,1,4,5],
-%   [_,6,5,3,2,4],
-%   [2,4,3,5,1,_],
-%   [3,2,_,6,5,_],
-%   [5,_,_,4,3,_]
-%   Puzzle = [A,B,C,D,E,F],
-%   str8ts([A,B,C,D,E,F,G,H,I]).
-
-%Puzzle = [
-%   [_,_,_,_,_,3],
-%   [_,_,_,1,_,_],
-%   [_,6,_,_,_,_],
-%   [_,_,3,_,1,_],
-%   [3,2,_,6,_,_],
-%   [5,_,_,_,_,_]
-%   ],
-%Colors = [
-%   [false,true,true,false,false,false],
-%   [false,true,true,false,true,true],
-%   [false,true,true,true,true,true],
-%   [true,true,true,true,true,false],
-%   [true,true,false,true,true,false],
-%   [false,false,false,true,true,false]
-%   ],
-%   Puzzle = [A,B,C,D,E,F],
-%   Colors = [G,H,I,J,K,L],
-%   str8ts([A,B,C,D,E,F],[G,H,I,J,K,L]).
