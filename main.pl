@@ -1,22 +1,23 @@
 :- use_module(library(clpfd)).
 
-tabuleiro([[_,_,_,_,_,3],
-           [_,_,_,1,_,_],
-           [_,6,_,_,_,_],
-           [_,_,3,_,1,_],
-           [3,2,_,6,_,_],
-           [5,_,_,_,_,_]]).
+tabuleiro([[0,_,_,0,0,3],
+           [0,_,_,1,_,_],
+           [0,6,_,_,_,_],
+           [0,_,3,_,1,_],
+           [3,2,0,6,_,0],
+           [5,0,0,_,_,0]]).
 
 cores([[false,true,true,false,false,false],
        [false,true,true,false,true,true],
        [false,true,true,true,true,true],
-       [true,true,true,true,true,false],
+       [false,true,true,true,true,true],
        [true,true,false,true,true,false],
        [false,false,false,true,true,false]]).
 
 str8ts(Rows) :-
-    cores(Color),
-    append(Rows, Vs), Vs ins 1..6,
+    cores(Colors),
+    set_domain(Rows,Colors),
+    maplist(set_domain,Rows),
     before_sequences(Rows,Colors,Sequences),
     maplist(is_sequence, Sequences),
     transpose(Rows, Columns),
@@ -24,6 +25,10 @@ str8ts(Rows) :-
     before_sequences(Columns,TColors,TSequences),
     maplist(is_sequence, TSequences),
     maplist(label, Rows).
+
+set_domain([[N|Number]],[[H|Color]]) :-
+    (H = true -> N in 1..6; N in 0..6),
+    set_domain(Number,Color,Result).
 
 is_sequence([]).
 is_sequence([L]).
