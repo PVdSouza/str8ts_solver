@@ -17,8 +17,14 @@ my_last([],-1).
 my_last([X],X).
 my_last([H|T],L) :- my_last(T,L).
 
+% verifica se a lista não começa com false.
+before_sequences(Number,Color,Result) :-
+    verify(Color,L),
+    ( L = false -> remove_used_false(Number,Color,XNumber),
+                remove_used_false_colors(Number,Color,XColor),
+                get_sequences(XNumber,XColor,Result);
+                get_sequences(Number,Color,Result)).
 
-%não ta funcionando
 get_sequences([],[],[]).
 get_sequences(Number,Color,[L | Tail]) :-
     get_one_sequence(Number,Color,L),
@@ -26,13 +32,17 @@ get_sequences(Number,Color,[L | Tail]) :-
     remove_used_true_colors(Number,Color,XColor),
     get_sequences(XNumber,XColor,Tail).
 
+verify([],false).
+verify([false|Color],false).
+verify([true|Color],true).
+
 remove_used_true([],[],[]).
 remove_used_true([N|Number],[C|Color],Result) :-
     (C = true -> remove_used_true(Number,Color,Result);remove_used_false([N|Number],[C|Color],Result)).
 
 remove_used_false([],[],[]).
 remove_used_false(Number,true,Number).
-remove_used_false(Number,[true,Color],Number).
+remove_used_false(Number,[true|_],Number).
 remove_used_false([N|Number],[C|Color],Result) :-
     (C = false -> remove_used_false(Number,Color,Result);Result is [N|Number]).
 
@@ -42,7 +52,7 @@ remove_used_true_colors([N|Number],[C|Color],Result) :-
 
 remove_used_false_colors([],[],[]).
 remove_used_false_colors(_,true,true).
-remove_used_false_colors(_,[true,Color],[true,Color]).
+remove_used_false_colors(_,[true|Color],[true|Color]).
 remove_used_false_colors([N|Number],[C|Color],Result) :-
     (C = false -> remove_used_false_colors(Number,Color,Result);Result is [C|Color]).
 
