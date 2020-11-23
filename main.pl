@@ -17,7 +17,6 @@ cores([[false,true,true,false,false,false],
 str8ts(Rows) :-
     cores(Colors),
     set_domain(Rows,Colors),
-    maplist(set_domain,Rows),
     before_sequences(Rows,Colors,Sequences),
     maplist(is_sequence, Sequences),
     transpose(Rows, Columns),
@@ -26,17 +25,20 @@ str8ts(Rows) :-
     maplist(is_sequence, TSequences),
     maplist(label, Rows).
 
-set_domain([[N|Number]],[[H|Color]]) :-
+set_domain([],[]).
+set_domain([[]|Tail],[[]|TCor]) :- set_domain(Tail,TCor).
+set_domain([[N]|Tail],[[C]|TCor]) :- (C -> N in 1..6; N in 0..6), set_domain([Number]|Tail,[Color]|TCor).
+set_domain([[N|Number]|Tail],[[H|Color]|TCor]) :-
     (H = true -> N in 1..6; N in 0..6),
-    set_domain(Number,Color,Result).
+    set_domain([Number|Tail],[Color|TCor]).
 
 is_sequence([]).
-is_sequence([L]).
+is_sequence([_]).
 is_sequence(L) :- sort(L,XL), [First|_] = XL, my_last(XL,Last), length(L,Len), Len - 1 = Last - First.
 
 my_last([],-1).
 my_last([X],X).
-my_last([H|T],L) :- my_last(T,L).
+my_last([_|T],L) :- my_last(T,L).
 
 % verifica se a lista não começa com false.
 before_sequences(Number,Color,Result) :-
@@ -54,8 +56,7 @@ get_sequences(Number,Color,[L | Tail]) :-
     get_sequences(XNumber,XColor,Tail).
 
 verify([],false).
-verify([false|Color],false).
-verify([true|Color],true).
+verify([[X|_]|_],X).
 
 remove_used_true([],[],[]).
 remove_used_true([N|Number],[C|Color],Result) :-
@@ -74,21 +75,12 @@ remove_used_true_colors([N|Number],[C|Color],Result) :-
 remove_used_false_colors([],[],[]).
 remove_used_false_colors(_,true,true).
 remove_used_false_colors(_,[true|Color],[true|Color]).
-remove_used_false_colors([N|Number],[C|Color],Result) :-
+remove_used_false_colors([_|Number],[C|Color],Result) :-
     (C = false -> remove_used_false_colors(Number,Color,Result);Result is [C|Color]).
 
 get_one_sequence([],[],[]).
 get_one_sequence(_,false,[]).
 get_one_sequence(number,true,number).
-get_one_sequence(_,[false|Color],[]).
+get_one_sequence(_,[false|_],[]).
 get_one_sequence([H|Number],[C|Color],L) :-
     (C = true -> get_one_sequence(Number,Color,XL), append([H],XL,L)).
-
-
-%   [
-%   [false,true,true,false,false,false],
-%   [false,true,true,false,true,true],
-%   [false,true,true,true,true,true],
-%   [true,true,true,true,true,false],
-%   [true,true,false,true,true,false],
-%   [false,false,false,true,true,false],
