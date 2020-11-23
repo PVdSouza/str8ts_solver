@@ -14,6 +14,12 @@ cores([[false,true,true,false,false,false],
        [true,true,false,true,true,false],
        [false,false,false,true,true,false]]).
 
+
+teste_n([[0,1,3,4],
+         [1,2,1,3]]).
+teste_c([[false,false,true,false],
+        [true,false, true, true]]).
+
 str8ts(Rows) :-
     cores(Colors),
     set_domain(Rows,Colors),
@@ -58,9 +64,20 @@ get_sequences(Number,Color,[L | Tail]) :-
 verify([],false).
 verify([[X|_]|_],X).
 
+remove_true_list([],[],[]).
+remove_true_list([N|Number],[C|Color],[R|Result]) :-
+    remove_used_true(N,C,R),
+    remove_true_list(Number,Color, Result).
+
 remove_used_true([],[],[]).
 remove_used_true([N|Number],[C|Color],Result) :-
     (C = true -> remove_used_true(Number,Color,Result);remove_used_false([N|Number],[C|Color],Result)).
+
+remove_false_list([],[],[]).
+remove_false_list([N|Number],[C|Color],[R|Result]) :-
+    remove_used_false(N,C,R),
+    remove_false_list(Number, Color, Result).
+
 
 remove_used_false([],[],[]).
 remove_used_false(Number,true,Number).
@@ -68,9 +85,21 @@ remove_used_false(Number,[true|_],Number).
 remove_used_false([N|Number],[C|Color],Result) :-
     (C = false -> remove_used_false(Number,Color,Result);Result is [N|Number]).
 
+
+remove_true_colors_list([],[],[]).
+remove_true_colors_list([N|Number],[C|Color],[R|Result]) :-
+    remove_used_true_colors(N,C,R),
+    remove_true_colors_list(Number,Color, Result).
+
 remove_used_true_colors([],[],[]).
 remove_used_true_colors([N|Number],[C|Color],Result) :-
     (C = true -> remove_used_true_colors(Number,Color,Result);remove_used_false_colors([N|Number],[C|Color],Result)).
+
+
+remove_false_colors_list([],[],[]).
+remove_false_colors_list([N|Number],[C|Color],[R|Result]) :-
+    remove_used_false_colors(N,C,R),
+    remove_false_colors_list(Number, Color, Result).
 
 remove_used_false_colors([],[],[]).
 remove_used_false_colors(_,true,true).
