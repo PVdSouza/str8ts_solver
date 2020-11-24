@@ -24,12 +24,31 @@ str8ts(Rows) :-
     cores(Colors),
     set_domain(Rows,Colors),
     before_sequences(Rows,Colors,Sequences),
-    maplist(is_sequence, Sequences),
-    transpose(Rows, Columns),
-    transpose(Colors, TColors),
-    before_sequences(Columns,TColors,TSequences),
-    maplist(is_sequence, TSequences),
+    all_diferent(Rows,ToCompare),
+    maplist(all_distinct,ToCompare),
+    %maplist(is_sequence,Sequences),
+    %are_sequences(Sequences),
+    %transpose(Rows, Columns),
+    %transpose(Colors, TColors),
+    %before_sequences(Columns,TColors,TSequences),
+    %maplist(is_sequence, TSequences),
     maplist(label, Rows).
+
+all_diferent([],[]).
+all_diferent([S|Sequences],[SX|Result]) :-
+    remove_zeros(S,SX),
+    all_diferent(Sequences,Result).
+
+remove_zeros([],[]).
+remove_zeros([0],[]).
+remove_zeros([X],[X]).
+remove_zeros([H|T],XL) :-
+    (H = 0 -> remove_zeros(T,XL); remove_zeros(T,L), XL = [H|L]).
+
+are_sequences([]).
+are_sequences([H|T]) :-
+    is_sequence(H),
+    are_sequences(T).
 
 set_domain([],[]).
 set_domain([[]|Tail],[[]|TCor]) :- set_domain(Tail,TCor).
@@ -49,10 +68,10 @@ my_last([_|T],L) :- my_last(T,L).
 % verifica se a lista não começa com false.
 before_sequences(Number,Color,Result) :-
     verify(Color,L),
-    ( L = false -> remove_used_false(Number,Color,XNumber),
-                remove_used_false_colors(Number,Color,XColor),
-                get_sequences(XNumber,XColor,Result);
-                get_sequences(Number,Color,Result)).
+    ( L = false -> remove_false_list(Number,Color,XNumber),
+                remove_false_colors_list(Number,Color,XColor),
+                get_seq(XNumber,XColor,Result);
+                get_seq(Number,Color,Result)).
 
 get_sequences([],[],[]).
 get_sequences(Number,Color,[L | Tail]) :-
@@ -63,6 +82,12 @@ get_sequences(Number,Color,[L | Tail]) :-
 
 verify([],false).
 verify([[X|_]|_],X).
+
+get_seq([],[],[]).
+get_seq([N|Number],[C|Color],XL) :-
+    get_sequences(N,C,L),
+    get_seq(Number,Color,Tail),
+    append(L,Tail,XL).
 
 remove_true_list([],[],[]).
 remove_true_list([N|Number],[C|Color],[R|Result]) :-
