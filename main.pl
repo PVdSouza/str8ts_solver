@@ -24,14 +24,15 @@ str8ts(Rows) :-
     cores(Colors),
     set_domain(Rows,Colors),
     before_sequences(Rows,Colors,Sequences),
-    all_diferent(Rows,ToCompare),
-    maplist(all_distinct,ToCompare),
-    %maplist(is_sequence,Sequences),
-    %are_sequences(Sequences),
-    %transpose(Rows, Columns),
-    %transpose(Colors, TColors),
-    %before_sequences(Columns,TColors,TSequences),
-    %maplist(is_sequence, TSequences),
+    all_diferent(Rows,ToCompare),    % <<<<<<< Era pra ter as duas linhas mesmo?
+    maplist(all_distinct,ToCompare), % <<<<<<< ???? big questions
+    are_sequences(Sequences),
+    transpose(Rows, Columns),
+    transpose(Colors, TColors),
+    before_sequences(Columns,TColors,TSequences),
+    all_diferent(Columns, ToCompareColumns),
+    maplist(all_distinct,ToCompareColumns),
+    are_sequences(TSequences),
     maplist(label, Rows).
 
 all_diferent([],[]).
@@ -51,27 +52,27 @@ are_sequences([H|T]) :-
     are_sequences(T).
 
 set_domain([],[]).
-set_domain([[]|Tail],[[]|TCor]) :- set_domain(Tail,TCor).
-set_domain([[N]|Tail],[[C]|TCor]) :- (C -> N in 1..6; N in 0..6), set_domain([Number]|Tail,[Color]|TCor).
+set_domain([[N]|Tail],[[C]|TCor]) :-
+    (C -> N in 1..6; N in 0..6),
+    set_domain(Tail,TCor).
 set_domain([[N|Number]|Tail],[[H|Color]|TCor]) :-
     (H = true -> N in 1..6; N in 0..6),
     set_domain([Number|Tail],[Color|TCor]).
 
 is_sequence([]).
 is_sequence([_]).
-is_sequence(L) :- sort(L,XL), [First|_] = XL, my_last(XL,Last), length(L,Len), Len - 1 = Last - First.
-
-my_last([],-1).
-my_last([X],X).
-my_last([_|T],L) :- my_last(T,L).
+is_sequence(L) :- sort(L,XL), [First|_] = XL, last(XL,Last), length(L,Len), Len - 1 = Last - First.
 
 % verifica se a lista não começa com false.
 before_sequences(Number,Color,Result) :-
     verify(Color,L),
-    ( L = false -> remove_false_list(Number,Color,XNumber),
-                remove_false_colors_list(Number,Color,XColor),
-                get_seq(XNumber,XColor,Result);
-                get_seq(Number,Color,Result)).
+    (L = false ->
+        remove_false_list(Number,Color,XNumber),
+        remove_false_colors_list(Number,Color,XColor),
+        get_seq(XNumber,XColor,Result)
+    ;
+        get_seq(Number,Color,Result)
+    ).
 
 get_sequences([],[],[]).
 get_sequences(Number,Color,[L | Tail]) :-
@@ -87,7 +88,7 @@ get_seq([],[],[]).
 get_seq([N|Number],[C|Color],XL) :-
     get_sequences(N,C,L),
     get_seq(Number,Color,Tail),
-    append(L,Tail,XL).
+    XL = [L|Tail].
 
 remove_true_list([],[],[]).
 remove_true_list([N|Number],[C|Color],[R|Result]) :-
@@ -96,7 +97,11 @@ remove_true_list([N|Number],[C|Color],[R|Result]) :-
 
 remove_used_true([],[],[]).
 remove_used_true([N|Number],[C|Color],Result) :-
-    (C = true -> remove_used_true(Number,Color,Result);remove_used_false([N|Number],[C|Color],Result)).
+    (C = true ->
+        remove_used_true(Number,Color,Result)
+    ;
+        remove_used_false([N|Number],[C|Color],Result)
+    ).
 
 remove_false_list([],[],[]).
 remove_false_list([N|Number],[C|Color],[R|Result]) :-
@@ -108,7 +113,11 @@ remove_used_false([],[],[]).
 remove_used_false(Number,true,Number).
 remove_used_false(Number,[true|_],Number).
 remove_used_false([N|Number],[C|Color],Result) :-
-    (C = false -> remove_used_false(Number,Color,Result);Result is [N|Number]).
+    (C = false ->
+        remove_used_false(Number,Color,Result)
+    ;
+        Result = [N|Number]
+    ).
 
 
 remove_true_colors_list([],[],[]).
@@ -118,7 +127,11 @@ remove_true_colors_list([N|Number],[C|Color],[R|Result]) :-
 
 remove_used_true_colors([],[],[]).
 remove_used_true_colors([N|Number],[C|Color],Result) :-
-    (C = true -> remove_used_true_colors(Number,Color,Result);remove_used_false_colors([N|Number],[C|Color],Result)).
+    (C ->
+        remove_used_true_colors(Number,Color,Result)
+    ;
+        remove_used_false_colors([N|Number],[C|Color],Result)
+    ).
 
 
 remove_false_colors_list([],[],[]).
@@ -130,11 +143,17 @@ remove_used_false_colors([],[],[]).
 remove_used_false_colors(_,true,true).
 remove_used_false_colors(_,[true|Color],[true|Color]).
 remove_used_false_colors([_|Number],[C|Color],Result) :-
-    (C = false -> remove_used_false_colors(Number,Color,Result);Result is [C|Color]).
+    (C = false ->
+        remove_used_false_colors(Number,Color,Result)
+    ;
+        Result = [C|Color]
+    ).
 
-get_one_sequence([],[],[]).
+
 get_one_sequence(_,false,[]).
 get_one_sequence(number,true,number).
 get_one_sequence(_,[false|_],[]).
 get_one_sequence([H|Number],[C|Color],L) :-
-    (C = true -> get_one_sequence(Number,Color,XL), append([H],XL,L)).
+    C,
+    get_one_sequence(Number,Color,XL),
+    L=[H|XL].
