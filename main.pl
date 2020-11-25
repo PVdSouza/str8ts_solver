@@ -24,15 +24,15 @@ str8ts(Rows) :-
     cores(Colors),
     set_domain(Rows,Colors),
     before_sequences(Rows,Colors,Sequences),
-    all_diferent(Rows,ToCompare),    % <<<<<<< Era pra ter as duas linhas mesmo?
-    maplist(all_distinct,ToCompare), % <<<<<<< ???? big questions
-    are_sequences(Sequences),
+    all_diferent(Rows,ToCompare),
+    maplist(all_distinct,ToCompare),
     transpose(Rows, Columns),
     transpose(Colors, TColors),
     before_sequences(Columns,TColors,TSequences),
     all_diferent(Columns, ToCompareColumns),
     maplist(all_distinct,ToCompareColumns),
-    are_sequences(TSequences),
+    %are_sequences(Sequences),
+    %are_sequences(TSequences),
     maplist(label, Rows).
 
 all_diferent([],[]).
@@ -75,11 +75,12 @@ before_sequences(Number,Color,Result) :-
     ).
 
 get_sequences([],[],[]).
-get_sequences(Number,Color,[L | Tail]) :-
+get_sequences(Number,Color,Result) :-
     get_one_sequence(Number,Color,L),
     remove_used_true(Number,Color,XNumber),
     remove_used_true_colors(Number,Color,XColor),
-    get_sequences(XNumber,XColor,Tail).
+    get_sequences(XNumber,XColor,Tail),
+    append(L,Tail,Result).
 
 verify([],false).
 verify([[X|_]|_],X).
@@ -149,7 +150,7 @@ remove_used_false_colors([_|Number],[C|Color],Result) :-
         Result = [C|Color]
     ).
 
-
+get_one_sequence([],[],[]).
 get_one_sequence(_,false,[]).
 get_one_sequence(number,true,number).
 get_one_sequence(_,[false|_],[]).
