@@ -14,6 +14,13 @@ cores([[false,true,true,false,false,false],
        [true,true,false,true,true,false],
        [false,false,false,true,true,false]]).
 
+n(0).
+n(1).
+n(2).
+n(3).
+n(4).
+n(5).
+n(6).
 
 teste_n([[0,1,3,4],
          [1,2,1,3]]).
@@ -31,9 +38,20 @@ str8ts(Rows) :-
     before_sequences(Columns,TColors,TSequences),
     all_diferent(Columns, ToCompareColumns),
     maplist(all_distinct,ToCompareColumns),
-    %are_sequences(Sequences),
-    %are_sequences(TSequences),
+    completa(Rows),
+    are_sequences(Sequences),
+    are_sequences(TSequences),
     maplist(label, Rows).
+
+completa([]).
+completa([[X1,X2,X3,X4,X5,X6]|Tail]) :-
+    n(X1), n(X2), n(X3), n(X4), n(X5), n(X6),
+    remove_zeros([X1,X2,X3,X4,X5,X6],Result),
+    todos_diferentes(Result),
+    completa(Tail).
+
+todos_diferentes([]).
+todos_diferentes([H|T]) :- not(member(H,T)), todos_diferentes(T).
 
 all_diferent([],[]).
 all_diferent([S|Sequences],[SX|Result]) :-
@@ -61,7 +79,7 @@ set_domain([[N|Number]|Tail],[[H|Color]|TCor]) :-
 
 is_sequence([]).
 is_sequence([_]).
-is_sequence(L) :- sort(L,XL), [First|_] = XL, last(XL,Last), length(L,Len), Len - 1 = Last - First.
+is_sequence(L) :- sort(L,XL), [First|_] = XL, last(XL,Last), length(L,Len), Len - 1 =:= Last - First.
 
 % verifica se a lista não começa com false.
 before_sequences(Number,Color,Result) :-
@@ -80,7 +98,7 @@ get_sequences(Number,Color,Result) :-
     remove_used_true(Number,Color,XNumber),
     remove_used_true_colors(Number,Color,XColor),
     get_sequences(XNumber,XColor,Tail),
-    append(L,Tail,Result).
+    Result = [L|Tail].
 
 verify([],false).
 verify([[X|_]|_],X).
@@ -89,7 +107,7 @@ get_seq([],[],[]).
 get_seq([N|Number],[C|Color],XL) :-
     get_sequences(N,C,L),
     get_seq(Number,Color,Tail),
-    XL = [L|Tail].
+    append(L,Tail,XL).
 
 remove_true_list([],[],[]).
 remove_true_list([N|Number],[C|Color],[R|Result]) :-
