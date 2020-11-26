@@ -1,18 +1,18 @@
 :- use_module(library(clpfd)).
 
-tabuleiro([[0,_,_,0,0,3],
-           [0,_,_,1,_,_],
-           [0,6,_,_,_,_],
-           [0,_,3,_,1,_],
-           [3,2,0,6,_,0],
-           [5,0,0,_,_,0]]).
+tabuleiro([[5,0,1,_,_,0],
+           [0,2,_,_,_,_],
+           [4,_,_,0,_,_],
+           [_,_,0,_,_,3],
+           [_,_,_,_,_,1],
+           [0,_,_,3,0,0]]).
 
-cores([[false,true,true,false,false,false],
-       [false,true,true,false,true,true],
+cores([[false,false,true,true,true,false],
        [false,true,true,true,true,true],
-       [false,true,true,true,true,true],
-       [true,true,false,true,true,false],
-       [false,false,false,true,true,false]]).
+       [true,true,true,false,true,true],
+       [true,true,false,true,true,true],
+       [true,true,true,true,true,false],
+       [false,true,true,true,false,false]]).
 
 n(0).
 n(1).
@@ -31,8 +31,6 @@ str8ts(Rows) :-
     cores(Colors),
     set_domain(Rows,Colors),
     before_sequences(Rows,Colors,Sequences),
-    all_diferent(Rows,ToCompare),
-    maplist(all_distinct,ToCompare),
     transpose(Rows, Columns),
     transpose(Colors, TColors),
     before_sequences(Columns,TColors,TSequences),
