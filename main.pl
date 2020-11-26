@@ -14,6 +14,34 @@ cores([[false,false,true,true,true,false],
        [true,true,true,true,true,false],
        [false,true,true,true,false,false]]).
 
+tabuleiro1([[3,0,_,4,_,0],
+           [0,_,_,_,_,0],
+           [_,_,0,0,_,2],
+           [4,_,0,0,_,3],
+           [0,_,_,_,_,5],
+           [0,_,3,_,1,0]]).
+
+cores1([[false,false,true,true,true,false],
+       [false,true,true,true,true,false],
+       [true,true,false,false,true,true],
+       [true,true,false,false,true,true],
+       [false,true,true,true,true,false],
+       [false,true,true,true,true,false]]).
+
+tabuleiro2([[0,0,0,_,_,_],
+           [_,2,0,_,_,_],
+           [_,_,_,_,_,6],
+           [1,_,_,_,_,_],
+           [_,_,_,0,6,_],
+           [_,_,5,0,0,1]]).
+
+cores2([[false,false,false,true,true,true],
+       [true,true,false,true,true,true],
+       [true,true,true,true,true,true],
+       [true,true,true,true,true,true],
+       [true,true,true,false,true,true],
+       [true,true,true,false,false,false]]).
+
 n(0).
 n(1).
 n(2).
@@ -27,8 +55,7 @@ teste_n([[0,1,3,4],
 teste_c([[false,false,true,false],
         [true,false, true, true]]).
 
-str8ts(Rows) :-
-    cores(Colors),
+str8ts(Rows,Colors) :-
     set_domain(Rows,Colors),
     before_sequences(Rows,Colors,Sequences),
     transpose(Rows, Columns),
@@ -37,6 +64,7 @@ str8ts(Rows) :-
     all_diferent(Columns, ToCompareColumns),
     maplist(all_distinct,ToCompareColumns),
     completa(Rows),
+    %writeln(Rows),
     are_sequences(Sequences),
     are_sequences(TSequences),
     maplist(label, Rows).
