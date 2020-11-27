@@ -1,5 +1,6 @@
 :- use_module(library(clpfd)).
 
+% Zeros representam células pretas vazias
 tabuleiro([[5,0,1,_,_,0],
            [0,2,_,_,_,_],
            [4,_,_,0,_,_],
@@ -7,6 +8,7 @@ tabuleiro([[5,0,1,_,_,0],
            [_,_,_,_,_,1],
            [0,_,_,3,0,0]]).
 
+% True representam células brancas
 cores([[false,false,true,true,true,false],
        [false,true,true,true,true,true],
        [true,true,true,false,true,true],
@@ -42,6 +44,7 @@ cores2([[false,false,false,true,true,true],
        [true,true,true,false,true,true],
        [true,true,true,false,false,false]]).
 
+% Números possíveis de serem encontrados
 n(0).
 n(1).
 n(2).
@@ -55,6 +58,7 @@ teste_n([[0,1,3,4],
 teste_c([[false,false,true,false],
         [true,false, true, true]]).
 
+% Resolvedor
 str8ts(Rows,Colors) :-
     set_domain(Rows,Colors),
     before_sequences(Rows,Colors,Sequences),
@@ -69,6 +73,7 @@ str8ts(Rows,Colors) :-
     are_sequences(TSequences),
     maplist(label, Rows).
 
+% Procedure que completa o tabuleiro
 completa([]).
 completa([[X1,X2,X3,X4,X5,X6]|Tail]) :-
     n(X1), n(X2), n(X3), n(X4), n(X5), n(X6),
@@ -76,6 +81,7 @@ completa([[X1,X2,X3,X4,X5,X6]|Tail]) :-
     todos_diferentes(Result),
     completa(Tail).
 
+% Fução recursiva que retorna se uma lista possui todos os elementos diferentes
 todos_diferentes([]).
 todos_diferentes([H|T]) :- not(member(H,T)), todos_diferentes(T).
 
@@ -84,17 +90,22 @@ all_diferent([S|Sequences],[SX|Result]) :-
     remove_zeros(S,SX),
     all_diferent(Sequences,Result).
 
+% Remove todas as ocorrências de zero em uma lita.
 remove_zeros([],[]).
 remove_zeros([0],[]).
 remove_zeros([X],[X]).
 remove_zeros([H|T],XL) :-
     (H = 0 -> remove_zeros(T,XL); remove_zeros(T,L), XL = [H|L]).
 
+% Recebe uma lista de listas e verifica se as listas que a compoem formam sequencias
 are_sequences([]).
 are_sequences([H|T]) :-
     is_sequence(H),
     are_sequences(T).
 
+% Seta o domínio de valores possiveis das células do tabuleiro
+% Células pretas podem ter valores de zero a 6,
+% e células brancas podem ter valores de 1 a 6.
 set_domain([],[]).
 set_domain([[N]|Tail],[[C]|TCor]) :-
     (C -> N in 1..6; N in 0..6),
@@ -103,6 +114,8 @@ set_domain([[N|Number]|Tail],[[H|Color]|TCor]) :-
     (H = true -> N in 1..6; N in 0..6),
     set_domain([Number|Tail],[Color|TCor]).
 
+% Verifica se uma lista constitui uma sequencia,
+% quando seus elementos são ordenados
 is_sequence([]).
 is_sequence([_]).
 is_sequence(L) :- sort(L,XL), [First|_] = XL, last(XL,Last), length(L,Len), Len - 1 =:= Last - First.
@@ -118,6 +131,7 @@ before_sequences(Number,Color,Result) :-
         get_seq(Number,Color,Result)
     ).
 
+% Retorna todas as sequencias do tabuleiro
 get_sequences([],[],[]).
 get_sequences(Number,Color,Result) :-
     get_one_sequence(Number,Color,L),
@@ -135,11 +149,13 @@ get_seq([N|Number],[C|Color],XL) :-
     get_seq(Number,Color,Tail),
     append(L,Tail,XL).
 
+% chama remove_used_true para cada uma das sublistas da matriz
 remove_true_list([],[],[]).
 remove_true_list([N|Number],[C|Color],[R|Result]) :-
     remove_used_true(N,C,R),
     remove_true_list(Number,Color, Result).
 
+% remove numeros utilizados para celulas true
 remove_used_true([],[],[]).
 remove_used_true([N|Number],[C|Color],Result) :-
     (C = true ->
@@ -153,7 +169,6 @@ remove_false_list([N|Number],[C|Color],[R|Result]) :-
     remove_used_false(N,C,R),
     remove_false_list(Number, Color, Result).
 
-
 remove_used_false([],[],[]).
 remove_used_false(Number,true,Number).
 remove_used_false(Number,[true|_],Number).
@@ -163,7 +178,6 @@ remove_used_false([N|Number],[C|Color],Result) :-
     ;
         Result = [N|Number]
     ).
-
 
 remove_true_colors_list([],[],[]).
 remove_true_colors_list([N|Number],[C|Color],[R|Result]) :-
@@ -194,6 +208,7 @@ remove_used_false_colors([_|Number],[C|Color],Result) :-
         Result = [C|Color]
     ).
 
+% Retorna uma sequência de números.
 get_one_sequence([],[],[]).
 get_one_sequence(_,false,[]).
 get_one_sequence(number,true,number).
